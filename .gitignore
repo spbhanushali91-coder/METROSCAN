@@ -1,0 +1,17 @@
+# Node
+node_modules/
+npm-debug.log
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Runtime data — mat commit karo
+backend/uploads/
+backend/reports/
+backend/data/
+
+# Env files
+.env

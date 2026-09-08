@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard — Legal Metrology Compliance Checker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <h1>⚖️ Legal Metrology Compliance Checker</h1>
+  <nav>
+    <a href="index.html">Scan Product</a>
+    <a href="dashboard.html">Dashboard</a>
+  </nav>
+</header>
+
+<main>
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card"><div class="value">–</div><div class="label">Total Scanned</div></div>
+    <div class="stat-card"><div class="value">–</div><div class="label">Compliant</div></div>
+    <div class="stat-card"><div class="value">–</div><div class="label">Non-Compliant</div></div>
+    <div class="stat-card"><div class="value">–</div><div class="label">Compliance Rate</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Scanned Products</h2>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search by product name...">
+      <select id="statusFilter">
+        <option value="">All statuses</option>
+        <option value="COMPLIANT">Compliant</option>
+        <option value="NON_COMPLIANT">Non-Compliant</option>
+      </select>
+  <button id="exportCsvBtn" type="button">⬇ Export CSV</button>
+    </div>
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Product Name</th><th>Status</th><th>Scanned At</th><th></th></tr>
+      </thead>
+      <tbody id="productsBody">
+        <tr><td colspan="5" class="loading">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

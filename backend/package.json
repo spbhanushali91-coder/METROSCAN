@@ -1,0 +1,21 @@
+{
+  "name": "legal-metrology-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Legal Metrology Compliance Checker",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "form-data": "^4.0.0",
+    "multer": "^1.4.5-lts.1",
+    "pdfkit": "^0.15.0"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  }
+}

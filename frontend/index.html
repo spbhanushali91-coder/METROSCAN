@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Legal Metrology Compliance Checker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <h1>⚖️ Legal Metrology Compliance Checker</h1>
+  <nav>
+    <a href="index.html">Scan Product</a>
+    <a href="dashboard.html">Dashboard</a>
+  </nav>
+</header>
+
+<main>
+  <div class="card">
+    <h2>Scan a Product Label</h2>
+    <p style="color:#6b7280; font-size:14px; margin-top:-8px;">
+      Upload a clear image of the product's packaging/label. The system will extract
+      declarations and check them against the Legal Metrology (Packaged Commodities) Rules, 2011.
+    </p>
+
+    <label for="productName" style="font-size:13px; font-weight:600;">Product Name (optional)</label>
+    <input type="text" id="productName" placeholder="e.g. XYZ Wheat Flour 1kg">
+
+    <div class="upload-zone" id="dropZone">
+      <input type="file" id="fileInput" accept="image/png, image/jpeg, image/webp">
+      <p id="dropText">📷 Click to select or drag & drop a label image here</p>
+      <img id="preview" alt="preview">
+    </div>
+
+    <div id="errorBox"></div>
+
+    <div style="margin-top: 20px;">
+      <button class="btn" id="scanBtn" disabled>Scan for Compliance</button>
+    </div>
+
+    <div id="loadingBox" style="display:none;" class="loading">
+      ⏳ Extracting declarations and checking compliance... this may take a few seconds.
+    </div>
+  </div>
+
+  <div class="card" id="resultCard" style="display:none;">
+    <h2>Compliance Result</h2>
+    <div id="resultContent"></div>
+  </div>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/upload.js"></script>
+</body>
+</html>
