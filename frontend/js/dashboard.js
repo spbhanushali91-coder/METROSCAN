@@ -1,6 +1,7 @@
+requireLogin(); // redirect to login.html if no valid token
 async function loadStats() {
   try {
-    const res = await fetch(`${API_BASE}/dashboard/stats`);
+    const res = await fetch(`${API_BASE}/dashboard/stats`,{ headers: authHeaders() });
     const stats = await res.json();
     const grid = document.getElementById('statsGrid');
     grid.innerHTML = `
@@ -25,7 +26,7 @@ async function loadProducts() {
   tbody.innerHTML = `<tr><td colspan="5" class="loading">Loading...</td></tr>`;
 
   try {
-    const res = await fetch(`${API_BASE}/products?${params.toString()}`);
+    const res = await fetch(`${API_BASE}/products?${params.toString()}`,{ headers: authHeaders() });
     const rows = await res.json();
 
     if (!rows.length) {
@@ -34,17 +35,17 @@ async function loadProducts() {
     }
 
     tbody.innerHTML = rows.map((r) => {
-      const badgeClass = r.status === 'COMPLIANT' ? 'compliant' : 'non-compliant';
-      const badgeLabel = r.status === 'COMPLIANT' ? 'Compliant' : `Non-Compliant`;
-      return `
-        <tr onclick="window.location='product.html?id=${r.id}'">
-          <td>#${r.id}</td>
-          <td>${r.product_name || 'Untitled'}</td>
-          <td><span class="status-badge ${badgeClass}">${badgeLabel}</span></td>
-          <td>${new Date(r.scanned_at).toLocaleString()}</td>
-          <td><a href="${API_BASE}/products/${r.id}/report" target="_blank" onclick="event.stopPropagation()">Report ⬇</a></td>
-        </tr>`;
-    }).join('');
+  const badgeClass = r.status === 'COMPLIANT' ? 'compliant' : 'non-compliant';
+  const badgeLabel = r.status === 'COMPLIANT' ? 'Compliant' : `Non-Compliant`;
+  return `
+    <tr onclick="window.location='product.html?id=${r.id}'">
+      <td>#${r.id}</td>
+      <td>${r.product_name || 'Untitled'}</td>
+      <td><span class="status-badge ${badgeClass}">${badgeLabel}</span></td>
+      <td>${new Date(r.scanned_at).toLocaleString()}</td>
+      <td><a href="#" onclick="event.stopPropagation(); event.preventDefault(); downloadReport(${r.id})">Report ⬇</a></td>
+    </tr>`;
+}).join('');
   } catch (e) {
     tbody.innerHTML = `<tr><td colspan="5" class="loading">Could not reach backend.</td></tr>`;
   }
@@ -61,17 +62,48 @@ function debounce(fn, delay) {
   };
 }
 
+async function downloadReport(id) {
+  const res = await fetch(`${API_BASE}/products/${id}/report`, { headers: authHeaders() });
+  if (!res.ok) {
+    alert('Could not download report. Please try again.');
+    return;
+  }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `compliance-report-${id}.pdf`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
-document.getElementById('exportCsvBtn').addEventListener('click', () => {
+document.getElementById('exportCsvBtn').addEventListener('click', async () => {
   const search = document.getElementById('searchInput').value;
   const status = document.getElementById('statusFilter').value;
   const params = new URLSearchParams();
   if (search) params.append('search', search);
   if (status) params.append('status', status);
 
-  // Trigger download using current filters (same query the table is showing)
-  window.location.href = `${API_BASE}/products/export/csv?${params.toString()}`;
+  const res = await fetch(`${API_BASE}/products/export/csv?${params.toString()}`, { headers: authHeaders() });
+  if (!res.ok) {
+    alert('Export failed. Please try again.');
+    return;
+  }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `compliance-scans-${Date.now()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
 });
+
+
+const currentUser = getUser();
+if (currentUser) {
+  document.getElementById('userInfo').textContent = `${currentUser.displayName} (${currentUser.role})`;
+}
+
 loadStats();
 loadProducts();
 

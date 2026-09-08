@@ -1,8 +1,7 @@
-// Uses Node.js's built-in SQLite module (node:sqlite) — no native compilation
-// required, unlike better-sqlite3. Available unflagged in Node.js 22.5+ / 23.4+.
 const { DatabaseSync } = require('node:sqlite');
 const path = require('path');
 const fs = require('fs');
+const bcrypt = require('bcryptjs');
 
 const dataDir = path.join(__dirname, '..', '..', 'data');
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
@@ -15,14 +14,35 @@ db.exec(`
     product_name TEXT,
     image_path TEXT,
     scanned_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    status TEXT,                 -- 'COMPLIANT' | 'NON_COMPLIANT'
+    status TEXT,
     violations_count INTEGER DEFAULT 0,
     ocr_text TEXT,
-    result_json TEXT,            -- full compliance result from OCR service
+    result_json TEXT,
     report_path TEXT,
     scanned_by TEXT DEFAULT 'demo-officer',
     role TEXT DEFAULT 'ENFORCEMENT_OFFICER'
   );
 `);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    display_name TEXT,
+    role TEXT NOT NULL   -- 'ADMIN' | 'ENFORCEMENT_OFFICER'
+  );
+`);
+
+// Seed demo users only if the table is empty — safe to run every startup
+const userCount = db.prepare('SELECT COUNT(*) AS c FROM users').get().c;
+if (userCount === 0) {
+  const insertUser = db.prepare(
+    'INSERT INTO users (username, password_hash, display_name, role) VALUES (?, ?, ?, ?)'
+  );
+  insertUser.run('admin', bcrypt.hashSync('admin123', 10), 'System Admin', 'ADMIN');
+  insertUser.run('officer1', bcrypt.hashSync('officer123', 10), 'Enforcement Officer', 'ENFORCEMENT_OFFICER');
+  console.log('Seeded demo users: admin/admin123 (ADMIN), officer1/officer123 (ENFORCEMENT_OFFICER)');
+}
 
 module.exports = db;

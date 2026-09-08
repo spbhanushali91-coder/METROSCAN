@@ -5,15 +5,17 @@
 <title>Legal Metrology Compliance Checker</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="css/style.css">
-</head>
+</head> 
 <body>
 
 <header class="topbar">
   <h1>⚖️ Legal Metrology Compliance Checker</h1>
-  <nav>
-    <a href="index.html">Scan Product</a>
-    <a href="dashboard.html">Dashboard</a>
-  </nav>
+<nav>
+  <a href="index.html">Scan Product</a>
+  <a href="dashboard.html">Dashboard</a>
+  <span id="userInfo" style="margin-left:16px; font-size:13px;"></span>
+  <button onclick="logout()" type="button" style="margin-left:8px;">Logout</button>
+</nav>
 </header>
 
 <main>
@@ -51,6 +53,7 @@
 </main>
 
 <script src="js/config.js"></script>
+<script src="js/auth.js"></script>
 <script src="js/upload.js"></script>
 </body>
 </html>

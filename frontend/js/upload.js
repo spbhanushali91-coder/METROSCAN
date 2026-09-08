@@ -1,3 +1,4 @@
+requireLogin();
 const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
 const preview = document.getElementById('preview');
@@ -62,7 +63,7 @@ scanBtn.addEventListener('click', async () => {
   try {
     const res = await fetch(`${API_BASE}/scan`, {
       method: 'POST',
-      headers: { 'x-user-role': 'ENFORCEMENT_OFFICER' },
+       headers: authHeaders(),
       body: formData
     });
     const data = await res.json();
@@ -97,17 +98,17 @@ function renderResult(data) {
       </div>`;
   });
 
-  resultContent.innerHTML = `
-    <p><span class="status-badge ${badgeClass}">${badgeLabel}</span></p>
-    <div style="margin: 16px 0;">${checksHtml}</div>
-    <div style="margin-top: 16px;">
-      <a class="btn" style="text-decoration:none; display:inline-block;" href="${API_BASE}/products/${data.id}/report" target="_blank">⬇ Download PDF Report</a>
-      <a class="btn secondary" style="text-decoration:none; display:inline-block; margin-left:10px;" href="dashboard.html">View Dashboard</a>
-    </div>
-    <details style="margin-top:18px;">
-      <summary style="cursor:pointer; font-size:13px; color:#6b7280;">Show raw OCR text</summary>
-      <div class="ocr-text-box">${(data.ocrText || '').replace(/</g, '&lt;')}</div>
-    </details>
-  `;
-  resultCard.style.display = 'block';
+resultContent.innerHTML = `
+  <p><span class="status-badge ${badgeClass}">${badgeLabel}</span></p>
+  <div style="margin: 16px 0;">${checksHtml}</div>
+  <div style="margin-top: 16px;">
+    <button class="btn" type="button" onclick="downloadReport(${data.id})">⬇ Download PDF Report</button>
+    <a class="btn secondary" style="text-decoration:none; display:inline-block; margin-left:10px;" href="dashboard.html">View Dashboard</a>
+  </div>
+  <details style="margin-top:18px;">
+    <summary style="cursor:pointer; font-size:13px; color:#6b7280;">Show raw OCR text</summary>
+    <div class="ocr-text-box">${(data.ocrText || '').replace(/</g, '&lt;')}</div>
+  </details>
+`;
+resultCard.style.display = 'block';
 }

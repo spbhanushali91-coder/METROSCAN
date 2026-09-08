@@ -1,3 +1,5 @@
+requireLogin(); // redirect to login.html if not authenticated — ADD as very first line
+
 const params = new URLSearchParams(window.location.search);
 const productId = params.get('id');
 const card = document.getElementById('detailCard');
@@ -8,7 +10,7 @@ async function loadProduct() {
     return;
   }
   try {
-    const res = await fetch(`${API_BASE}/products/${productId}`);
+    const res = await fetch(`${API_BASE}/products/${productId}`, { headers: authHeaders() }); // CHANGED
     if (!res.ok) {
       card.innerHTML = '<div class="error-box">Product not found.</div>';
       return;
@@ -42,7 +44,7 @@ function render(product) {
     <p style="color:#6b7280; font-size:13px;">Scanned at ${new Date(product.scanned_at).toLocaleString()} by ${product.scanned_by}</p>
     <p><span class="status-badge ${badgeClass}">${badgeLabel}</span></p>
     <div style="margin: 16px 0;">${checksHtml}</div>
-    <a class="btn" style="text-decoration:none; display:inline-block;" href="${API_BASE}/products/${product.id}/report" target="_blank">⬇ Download PDF Report</a>
+    <button class="btn" type="button" onclick="downloadReport(${product.id})">⬇ Download PDF Report</button>
     <details style="margin-top:18px;">
       <summary style="cursor:pointer; font-size:13px; color:#6b7280;">Show raw OCR text</summary>
       <div class="ocr-text-box">${(product.ocr_text || '').replace(/</g, '&lt;')}</div>

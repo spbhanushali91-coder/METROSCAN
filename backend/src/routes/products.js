@@ -3,13 +3,13 @@ const router = express.Router();
 const db = require('../db/init');
 const upload = require('../middleware/upload');
 const { scanProduct } = require('../controllers/scanController');
-const { requireRole } = require('../middleware/auth');
+const { requireRole , requireAuth } = require('../middleware/auth');
 
 // POST /api/scan - upload + analyze
 router.post('/scan', requireRole('ENFORCEMENT_OFFICER', 'ADMIN'), upload.single('image'), scanProduct);
 
 // GET /api/products - list all (for dashboard / search)
-router.get('/products', (req, res) => {
+router.get('/products',requireAuth, (req, res) => {
   const { status, search } = req.query;
   let query = 'SELECT id, product_name, status, violations_count, scanned_at FROM products WHERE 1=1';
   const params = [];
@@ -28,7 +28,7 @@ router.get('/products', (req, res) => {
   res.json(rows);
 });
 
-router.get('/products/export/csv', (req, res) => {
+router.get('/products/export/csv',requireAuth, (req, res) => {
   const { status, search } = req.query;
   let query = 'SELECT id, product_name, status, violations_count, scanned_at, scanned_by FROM products WHERE 1=1';
   const params = [];
@@ -78,7 +78,7 @@ router.get('/products/export/csv', (req, res) => {
 
 
 // GET /api/products/:id - full detail
-router.get('/products/:id', (req, res) => {
+router.get('/products/:id',requireAuth, (req, res) => {
   const product = db.prepare('SELECT * FROM products WHERE id = ?').get(req.params.id);
   if (!product) return res.status(404).json({ error: 'Not found' });
   res.json({
@@ -88,7 +88,7 @@ router.get('/products/:id', (req, res) => {
 });
 
 // GET /api/products/:id/report - download PDF
-router.get('/products/:id/report', (req, res) => {
+router.get('/products/:id/report',requireAuth, (req, res) => {
   const product = db.prepare('SELECT * FROM products WHERE id = ?').get(req.params.id);
   if (!product || !product.report_path) return res.status(404).json({ error: 'Report not found' });
   res.download(product.report_path, `compliance-report-${product.id}.pdf`);

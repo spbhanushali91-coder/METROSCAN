@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login — METROSCAN</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<main style="max-width:400px; margin:80px auto;">
+  <div class="card">
+    <h2>⚖️ METROSCAN Login</h2>
+    <p style="color:#666; font-size:14px;">Legal Metrology Compliance Checker</p>
+
+    <form id="loginForm">
+      <label for="username">Username</label>
+      <input type="text" id="username" required autocomplete="username">
+
+      <label for="password">Password</label>
+      <input type="password" id="password" required autocomplete="current-password">
+
+      <button type="submit" style="margin-top:16px; width:100%;">Log In</button>
+    </form>
+
+    <p id="loginError" style="color:#b30000; display:none; margin-top:10px;"></p>
+  </div>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>
