@@ -84,3 +84,7 @@ Then visit http://localhost:8080
 - Add more rules (placement/"single field of vision" needs layout/bounding-box
   clustering, unit-standardization checks e.g. must be in g/kg not "approx 1kg")
 - Add user roles (Enforcement Officer / Admin) — schema already has a `role` column stub
+
+
+## 📑 Documentation
+Project ka complete Technical Architecture aur System Design dekhne ke liye yahan padhein: [ARCHITECTURE.md](./ARCHITECTURE.md)

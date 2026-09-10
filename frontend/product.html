@@ -8,13 +8,52 @@
 </head>
 <body>
 
-<header class="topbar">
-  <h1>⚖️ Legal Metrology Compliance Checker</h1>
-  <nav>
-    <a href="index.html">Scan Product</a>
-    <a href="dashboard.html">Dashboard</a>
+
+<header class="manufacturer-navbar">
+
+  <div class="brand-area">
+    <div class="brand-mark">⚖</div>
+
+    <div>
+      <div class="brand-name">METROSCAN</div>
+      <div class="brand-subtitle">Compliance Monitor</div>
+    </div>
+  </div>
+
+  <nav class="navbar-links">
+
+    <button
+      type="button"
+      class="nav-tab"
+      onclick="window.location.href='index.html'"
+    >
+      Scan Product
+    </button>
+
+    <button
+      type="button"
+      class="nav-tab"
+      onclick="window.location.href='dashboard.html'"
+    >
+      Dashboard
+    </button>
+
+    <span class="user-pill" id="userInfo">
+      Officer
+    </span>
+
+    <button
+      type="button"
+      class="logout-btn"
+      onclick="logout()"
+    >
+      Logout
+    </button>
+
   </nav>
+
 </header>
+
 
 <main>
   <div class="card" id="detailCard">

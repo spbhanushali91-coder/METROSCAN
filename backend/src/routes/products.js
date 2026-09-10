@@ -2,11 +2,16 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/init');
 const upload = require('../middleware/upload');
-const { scanProduct } = require('../controllers/scanController');
 const { requireRole , requireAuth } = require('../middleware/auth');
+const { scanProduct, exportScanJson, updateProduct  } = require('../controllers/scanController');
 
 // POST /api/scan - upload + analyze
 router.post('/scan', requireRole('ENFORCEMENT_OFFICER', 'ADMIN'), upload.single('image'), scanProduct);
+
+router.get('/products/:id/export/json', requireRole('ENFORCEMENT_OFFICER', 'ADMIN'), exportScanJson);
+
+router.patch('/products/:id', requireRole('ENFORCEMENT_OFFICER', 'ADMIN'), updateProduct);
+
 
 // GET /api/products - list all (for dashboard / search)
 router.get('/products',requireAuth, (req, res) => {

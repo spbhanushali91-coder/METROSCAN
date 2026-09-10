@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <title>Manufacturer Portal — METROSCAN</title>
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <link rel="stylesheet" href="css/manufacturer.css">
+</head>
+
+<body>
+
+  <!-- =====================================================
+       MAIN CONTENT
+  ====================================================== -->
+
+  <div class="page-content">
+
+    <!-- ===================================================
+         NAVBAR
+    ==================================================== -->
+
+    <header class="manufacturer-navbar">
+      <div class="brand-area">
+        <div class="brand-mark">
+          ⚖
+        </div>
+        <div>
+          <div class="brand-name">
+            METROSCAN
+          </div>
+          <div class="brand-subtitle">
+            Manufacturer Portal
+          </div>
+        </div>
+
+      </div>
+
+
+      <nav class="navbar-links">
+     <button
+  type="button"
+  class="nav-tab"
+  data-section="register-section"
+>
+  Register Lot
+</button>
+
+<button
+  type="button"
+  class="nav-tab active"
+  data-section="lots-section"
+>
+  Registered Lots
+</button>
+
+        <span class="user-pill"id="userInfo">
+          Manufacturer
+        </span>
+
+        <button
+          type="button"
+          class="logout-btn"
+          onclick="logout()"
+        >
+          Logout
+        </button>
+
+      </nav>
+
+    </header>
+
+
+
+    <!-- ===================================================
+         MAIN
+    ==================================================== -->
+
+    <main class="manufacturer-main">
+
+
+      <!-- =================================================
+           REGISTER LOT COMPONENT
+      ================================================== -->
+
+   <section id="register-section" class="portal-section ">
+  <div class="register-card">
+    <div class="section-header">
+      <div>
+        <h1>Register Product Lot</h1>
+        <p>Product lot ki declaration values register karein taaki future verification aur authenticity audit seamless ho sake.</p>
+      </div>
+    </div>
+
+    <!-- FORM MESSAGE -->
+    <div id="formMessage" class="form-message" style="display: none;"></div>
+
+    <!-- REGISTRATION FORM -->
+    <form id="lotForm">
+      <div class="form-grid">
+
+        <!-- Product Name -->
+        <div class="form-field">
+          <label for="productName">PRODUCT NAME <span>*</span></label>
+          <input type="text" id="productName" name="productName" placeholder="Enter product name" required>
+        </div>
+
+        <!-- Lot Number -->
+        <div class="form-field">
+          <label for="lotNumber">LOT / BATCH NUMBER <span>*</span></label>
+          <input type="text" id="lotNumber" name="lotNumber" placeholder="e.g. LOT-A102" required>
+          <small>Enter the exact lot or batch number printed on the product.</small>
+        </div>
+
+        <!-- Manufacturer Name -->
+        <div class="form-field">
+          <label for="manufacturerName">MANUFACTURER NAME</label>
+          <input type="text" id="manufacturerName" name="manufacturerName" placeholder="Enter manufacturer name">
+        </div>
+
+        <!-- Manufacturer Address -->
+        <div class="form-field">
+          <label for="manufacturerAddress">MANUFACTURER / PACKER ADDRESS</label>
+          <textarea id="manufacturerAddress" name="manufacturerAddress" rows="3" placeholder="Enter complete declared address"></textarea>
+        </div>
+
+        <!-- Net Quantity -->
+        <div class="form-field">
+          <label for="netQuantity">NET QUANTITY</label>
+          <input type="text" id="netQuantity" name="netQuantity" placeholder="e.g. 1 L">
+        </div>
+
+        <!-- MRP -->
+        <div class="form-field">
+          <label for="mrp">MAXIMUM RETAIL PRICE</label>
+          <input type="text" id="mrp" name="mrp" placeholder="e.g. ₹150">
+        </div>
+
+        <!-- Manufacture Date -->
+        <div class="form-field">
+          <label for="manufactureDate">MANUFACTURE / PACKING DATE</label>
+          <input type="text" id="manufactureDate" name="manufactureDate" placeholder="e.g. 08/2026">
+        </div>
+
+        <!-- Consumer Care -->
+        <div class="form-field">
+          <label for="consumerCare">CONSUMER CARE DETAILS</label>
+          <input type="text" id="consumerCare" name="consumerCare" placeholder="e.g. 1800-123-4567">
+        </div>
+
+        <!-- Country -->
+        <div class="form-field">
+          <label for="countryOfOrigin">COUNTRY OF ORIGIN</label>
+          <input type="text" id="countryOfOrigin" name="countryOfOrigin" placeholder="e.g. India">
+        </div>
+
+      </div>
+
+      <!-- FORM FOOTER -->
+      <div class="form-footer">
+        <p>Required declaration: <strong>Product Name</strong> and <strong>Lot / Batch Number</strong></p>
+        <button type="submit" class="primary-btn" id="registerBtn">
+          Register Lot <span>→</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+
+      <!-- =================================================
+           REGISTERED LOTS COMPONENT
+      ================================================== -->
+
+      <section
+        id="lots-section"
+        class="portal-section
+        active-section"
+      >
+
+        <div class="section-header">
+
+          <div>
+
+            <div class="section-eyebrow">
+              MANUFACTURER
+            </div>
+
+            <h1>
+              Registered Lots
+            </h1>
+
+            <p>
+              View the product lots registered by your account.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- SEARCH -->
+
+        <div class="lots-toolbar">
+
+          <div class="search-wrapper">
+
+            <span class="search-icon">
+              ⌕
+            </span>
+
+            <input
+              type="text"
+              id="lotSearch"
+              placeholder="Search by lot number or product name..."
+            >
+
+          </div>
+
+          <button
+            type="button"
+            class="secondary-btn"
+            id="refreshLotsBtn"
+          >
+            Refresh
+          </button>
+
+        </div>
+
+
+        <!-- LOTS TABLE -->
+
+        <div class="table-wrapper">
+          <table class="lots-table">
+            <thead>
+
+              <tr>
+
+                <th>
+                  LOT / BATCH
+                </th>
+
+                <th>
+                  PRODUCT
+                </th>
+
+                <th>
+                  MANUFACTURER
+                </th>
+
+                <th>
+                  NET QUANTITY
+                </th>
+
+                <th>
+                  MRP
+                </th>
+
+                <th>
+                  MANUFACTURED
+                </th>
+
+                <th>
+                  ACTION
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody id="lotsBody">
+
+              <tr>
+
+                <td
+                  colspan="7"
+                  class="table-loading"
+                >
+                  Loading registered lots...
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+    </main>
+
+
+
+    <!-- ===================================================
+         LOT DETAILS MODAL
+    ==================================================== -->
+
+    <div
+      id="lotModal"
+      class="modal-overlay"
+      style="display: none;"
+    >
+
+      <div class="lot-modal">
+
+        <div class="modal-header">
+
+          <div>
+
+            <div class="section-eyebrow">
+              LOT DETAILS
+            </div>
+
+            <h2 id="modalLotNumber">
+              —
+            </h2>
+
+          </div>
+
+          <button
+            type="button"
+            class="modal-close"
+            id="closeModalBtn"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <div
+          id="lotDetails"
+          class="lot-details"
+        ></div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- ===================================================
+         FOOTER
+    ==================================================== -->
+
+    <footer class="manufacturer-footer">
+
+      <span>
+        METROSCAN
+      </span>
+
+      <span>
+        Legal Metrology Compliance System
+      </span>
+
+    </footer>
+
+  </div>
+
+
+
+  <!-- =====================================================
+       SCRIPTS
+  ====================================================== -->
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/manufacturer.js"></script>
+
+</body>
+</html>

@@ -53,9 +53,19 @@ if (loginForm) {
         return;
       }
 
-      localStorage.setItem('metroscan_token', data.token);
-      localStorage.setItem('metroscan_user', JSON.stringify(data.user));
-      window.location.href = 'dashboard.html';
+     localStorage.setItem('metroscan_token', data.token);
+localStorage.setItem('metroscan_user', JSON.stringify(data.user));
+
+if (data.user.role === 'MANUFACTURER') {
+  window.location.href = 'manufacturer.html';
+} else if (data.user.role === 'ENFORCEMENT_OFFICER') {
+  window.location.href = 'index.html';
+} else if (data.user.role === 'ADMIN') {
+  window.location.href = 'dashboard.html';
+} else {
+  errorEl.textContent = 'Unknown user role. Please contact administrator.';
+  errorEl.style.display = 'block';
+}
     } catch (err) {
       errorEl.textContent = 'Could not reach server. Is the backend running?';
       errorEl.style.display = 'block';
@@ -77,3 +87,4 @@ async function downloadReport(id) {
   a.click();
   URL.revokeObjectURL(url);
 }
+

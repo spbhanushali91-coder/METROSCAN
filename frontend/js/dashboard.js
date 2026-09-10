@@ -34,7 +34,7 @@ async function loadProducts() {
       return;
     }
 
-    tbody.innerHTML = rows.map((r) => {
+tbody.innerHTML = rows.map((r) => {
   const badgeClass = r.status === 'COMPLIANT' ? 'compliant' : 'non-compliant';
   const badgeLabel = r.status === 'COMPLIANT' ? 'Compliant' : `Non-Compliant`;
   return `
@@ -43,7 +43,11 @@ async function loadProducts() {
       <td>${r.product_name || 'Untitled'}</td>
       <td><span class="status-badge ${badgeClass}">${badgeLabel}</span></td>
       <td>${new Date(r.scanned_at).toLocaleString()}</td>
-      <td><a href="#" onclick="event.stopPropagation(); event.preventDefault(); downloadReport(${r.id})">Report ⬇</a></td>
+      <td>
+        <a href="#" onclick="event.stopPropagation(); event.preventDefault(); downloadReport(${r.id})">Report ⬇</a>
+        &nbsp;|&nbsp;
+        <a href="#" onclick="event.stopPropagation(); event.preventDefault(); downloadJsonReport(${r.id})">JSON ⬇</a>
+      </td>
     </tr>`;
 }).join('');
   } catch (e) {
@@ -73,6 +77,21 @@ async function downloadReport(id) {
   const a = document.createElement('a');
   a.href = url;
   a.download = `compliance-report-${id}.pdf`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function downloadJsonReport(id) {
+  const res = await fetch(`${API_BASE}/products/${id}/export/json`, { headers: authHeaders() });
+  if (!res.ok) {
+    alert('Could not export JSON. Please try again.');
+    return;
+  }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `scan-${id}-report.json`;
   a.click();
   URL.revokeObjectURL(url);
 }

@@ -17,7 +17,9 @@ dropZone.addEventListener('dragover', (e) => {
   e.preventDefault();
   dropZone.classList.add('dragover');
 });
+
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+
 dropZone.addEventListener('drop', (e) => {
   e.preventDefault();
   dropZone.classList.remove('dragover');
@@ -82,10 +84,72 @@ scanBtn.addEventListener('click', async () => {
   }
 });
 
-function renderResult(data) {
-  const badgeClass = data.status === 'COMPLIANT' ? 'compliant' : 'non-compliant';
-  const badgeLabel = data.status === 'COMPLIANT' ? '✅ COMPLIANT' : `❌ NON-COMPLIANT (${data.violationsCount} issue${data.violationsCount === 1 ? '' : 's'})`;
 
+function renderManufacturerVerification(mv) {
+  if (!mv) return '';
+
+  const statusConfig = {
+    VERIFIED:     { icon: '✅', label: 'VERIFIED', cls: 'mv-verified' },
+    MISMATCH:     { icon: '⚠️', label: 'MISMATCH', cls: 'mv-mismatch' },
+    UNREGISTERED: { icon: '⛔', label: 'LOT NOT REGISTERED', cls: 'mv-unregistered' },
+    UNVERIFIED:   { icon: '—', label: 'UNVERIFIED', cls: 'mv-unverified' }
+  };
+  const cfg = statusConfig[mv.status] || statusConfig.UNVERIFIED;
+
+  let body = '';
+
+  if (mv.status === 'VERIFIED' || mv.status === 'MISMATCH') {
+    const fieldLabels = { netQuantity: 'Net Quantity', mrp: 'MRP' };
+    const checked = (mv.comparable || []).map(f => fieldLabels[f] || f);
+
+    body += `<p style="font-size:13px; color:#6b7280; margin:4px 0;">
+      Lot: <strong>${mv.lotNumber}</strong> — Registered to: ${mv.registered?.manufacturerName || '—'}
+    </p>`;
+
+    if (checked.length) {
+      body += `<p style="font-size:12px; color:#6b7280;">Fields cross-checked: ${checked.join(', ')}</p>`;
+    } else {
+      body += `<p style="font-size:12px; color:#b45309;">No comparable fields could be read reliably from the scan.</p>`;
+    }
+
+    if (mv.mismatches && mv.mismatches.length) {
+      body += `<table style="width:100%; margin-top:8px; font-size:13px; border-collapse:collapse;">
+        <tr style="text-align:left; color:#6b7280;"><th>Field</th><th>Registered</th><th>Scanned</th></tr>
+        ${mv.mismatches.map(m => `
+          <tr>
+            <td>${m.field}</td>
+            <td>${m.registered}</td>
+            <td style="color:#dc2626; font-weight:600;">${m.scanned}</td>
+          </tr>`).join('')}
+      </table>`;
+    }
+  } else if (mv.status === 'UNREGISTERED') {
+    body += `<p style="font-size:13px; color:#6b7280;">Lot <strong>${mv.lotNumber}</strong> ${mv.note}</p>`;
+  } else {
+    body += `<p style="font-size:13px; color:#6b7280;">${mv.note || 'Lot/batch number was not detected on the scanned label.'}</p>`;
+  }
+
+  return `
+    <div class="card" style="margin-top:16px; border-left: 4px solid var(--accent, #6366f1);">
+      <h3 style="margin-top:0;">${cfg.icon} Manufacturer Verification: ${cfg.label}</h3>
+      ${body}
+    </div>
+  `;
+}
+
+function renderResult(data) {
+  let badgeClass, badgeLabel;
+
+  if (data.status === 'COMPLIANT') {
+    badgeClass = 'compliant';
+    badgeLabel = '✅ COMPLIANT';
+  } else if (data.status === 'REVIEW_REQUIRED') {
+    badgeClass = 'review';
+    badgeLabel = `⚠️ REVIEW REQUIRED (${data.reviewCount ?? 0} to verify)`;
+  } else {
+    badgeClass = 'non-compliant';
+    badgeLabel = `❌ NON-COMPLIANT (${data.violationsCount} issue${data.violationsCount === 1 ? '' : 's'})`;
+  }
   let checksHtml = '';
   (data.checks || []).forEach((c) => {
     checksHtml += `
@@ -109,6 +173,7 @@ resultContent.innerHTML = `
     <summary style="cursor:pointer; font-size:13px; color:#6b7280;">Show raw OCR text</summary>
     <div class="ocr-text-box">${(data.ocrText || '').replace(/</g, '&lt;')}</div>
   </details>
+   ${renderManufacturerVerification(data.manufacturerVerification)}
 `;
 resultCard.style.display = 'block';
 }

@@ -24,6 +24,7 @@ db.exec(`
   );
 `);
 
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,6 +34,30 @@ db.exec(`
     role TEXT NOT NULL   -- 'ADMIN' | 'ENFORCEMENT_OFFICER'
   );
 `);
+
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS manufacturer_lots (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    lot_number TEXT NOT NULL UNIQUE,
+    product_name TEXT NOT NULL,
+
+    manufacturer_name TEXT,
+    manufacturer_address TEXT,
+
+    net_quantity TEXT,
+    mrp TEXT,
+    manufacture_date TEXT,
+
+    consumer_care TEXT,
+    country_of_origin TEXT,
+
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    created_by TEXT
+  );
+`);
+
 
 // Seed demo users only if the table is empty — safe to run every startup
 const userCount = db.prepare('SELECT COUNT(*) AS c FROM users').get().c;

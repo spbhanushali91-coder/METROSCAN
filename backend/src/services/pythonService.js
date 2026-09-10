@@ -12,14 +12,35 @@ async function analyzeImage(imagePath) {
   const form = new FormData();
   form.append('image', fs.createReadStream(imagePath));
 
-  const response = await axios.post(`${OCR_SERVICE_URL}/analyze`, form, {
-    headers: form.getHeaders(),
-    maxContentLength: Infinity,
-    maxBodyLength: Infinity,
-    timeout: 60000
-  });
+  try {
+    const response = await axios.post(
+      `${OCR_SERVICE_URL}/analyze`,
+      form,
+      {
+        headers: form.getHeaders(),
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        timeout: 60000
+      }
+    );
 
-  return response.data;
+    return response.data;
+
+  } catch (error) {
+    console.error('========== OCR SERVICE ERROR ==========');
+
+    console.error('Status:', error.response?.status);
+    console.error('Response:', error.response?.data);
+    console.error('Message:', error.message);
+
+    console.error('========================================');
+
+    throw error;
+  }
 }
 
-module.exports = { analyzeImage };
+
+
+module.exports = {
+  analyzeImage
+};

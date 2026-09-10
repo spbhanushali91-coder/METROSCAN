@@ -39,8 +39,9 @@ function generateReport(product) {
   doc.text(`Scanned By: ${product.scanned_by || 'demo-officer'}`, { width: textColumnWidth });
   doc.moveDown(0.5);
 
-  const statusColor = product.status === 'COMPLIANT' ? '#0a7d2c' : '#b30000';
-  doc.fontSize(13).fillColor(statusColor).text(`Overall Status: ${product.status}`, { width: textColumnWidth, underline: true });
+const statusColor = product.status === 'COMPLIANT' ? '#0a7d2c'
+  : product.status === 'REVIEW_REQUIRED' ? '#b45309'
+  : '#b30000';  doc.fontSize(13).fillColor(statusColor).text(`Overall Status: ${product.status}`, { width: textColumnWidth, underline: true });
   const textBlockEndY = doc.y;
 
   // Right column: small image thumbnail, top-right aligned
@@ -102,6 +103,43 @@ function generateReport(product) {
     });
   }
 
+  doc.moveDown(1.5);
+doc.fillColor('#000').fontSize(13).text('Manufacturer Verification', { underline: true });
+doc.moveDown(0.5);
+doc.fontSize(10);
+
+const mv = result.manufacturerVerification;
+
+if (!mv) {
+  doc.fillColor('#888').text('Manufacturer verification was not performed for this scan.');
+} else if (mv.status === 'VERIFIED') {
+  doc.fillColor('#0a7d2c').text(`VERIFIED — Lot ${mv.lotNumber}`);
+  doc.fillColor('#333').fontSize(9);
+  doc.text(`Registered to: ${mv.registered?.manufacturerName || 'N/A'}`);
+  doc.text(`Fields cross-checked: ${(mv.comparable || []).join(', ') || 'none'}`);
+} else if (mv.status === 'MISMATCH') {
+  doc.fillColor('#b30000').text(`MISMATCH — Lot ${mv.lotNumber}`);
+  doc.fillColor('#333').fontSize(9);
+  doc.text(`Registered to: ${mv.registered?.manufacturerName || 'N/A'}`);
+  doc.moveDown(0.3);
+  (mv.mismatches || []).forEach((m) => {
+    doc.fillColor('#b30000').text(
+      `${m.field}: Registered = ${m.registered}   |   Scanned = ${m.scanned}`
+    );
+  });
+} else if (mv.status === 'UNREGISTERED') {
+  doc.fillColor('#b45309').text(`LOT NOT REGISTERED — Lot ${mv.lotNumber || 'N/A'}`);
+  doc.fillColor('#333').fontSize(9).text(
+    mv.note || 'This lot could not be matched with the manufacturer registry.'
+  );
+} else {
+  doc.fillColor('#888').text('UNVERIFIED');
+  doc.fontSize(9).text(
+    mv.note || 'Lot/batch number was not detected on the scanned label.'
+  );
+}
+
+doc.fontSize(10).fillColor('#000');
   doc.moveDown(1.5);
   doc.fillColor('#000').fontSize(13).text('Extracted Label Text (OCR)', { underline: true });
   doc.moveDown(0.5);
